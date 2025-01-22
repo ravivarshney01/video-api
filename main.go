@@ -23,9 +23,10 @@ func main() {
 		return
 	}
 	router := mux.NewRouter()
-	router.Use(authMiddleware)
+	authenticatedRouter := router.NewRoute().Subrouter()
+	authenticatedRouter.Use(authMiddleware)
 
-	addRoutes(router)
+	addRoutes(router, authenticatedRouter)
 	server := &http.Server{
 		Addr:    ":8080",
 		Handler: router,

@@ -84,3 +84,36 @@ func (h *Handler) MergeVideos(w http.ResponseWriter, r *http.Request) {
 		"id": id,
 	})
 }
+
+func (h *Handler) ShareVideo(w http.ResponseWriter, r *http.Request) {
+	videoIdStr := r.FormValue("id")
+	videoId, err := strconv.Atoi(videoIdStr)
+	if err != nil {
+		response.WithError(w, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	url, err := core.ShareVideoUrl(r.Context(), videoId)
+	if err != nil {
+		response.WithError(w, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	response.WithJSON(w, http.StatusOK, "shared successfully", map[string]interface{}{
+		"url": url,
+	})
+}
+
+func (h *Handler) GetVideo(w http.ResponseWriter, r *http.Request) {
+	token := r.FormValue("token")
+	videoLink, err := core.ValidateJWT(token)
+	if err != nil {
+		response.WithError(w, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	w.Header().Set("Content-Type", "video/mp4")
+	w.Header().Set("Content-Disposition", "inline")
+	http.ServeFile(w, r, videoLink)
+	return
+}

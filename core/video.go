@@ -34,7 +34,7 @@ func TrimVideo(ctx context.Context, videoId int, start, end int) (err error) {
 	outputPath := fmt.Sprintf("uploads/trimmed_%s", video.Filename)
 	cmd := exec.Command("ffmpeg", "-ss", fmt.Sprintf("%d", start), "-to", fmt.Sprintf("%d", end), "-i", video.Url, "-c", "copy", outputPath)
 	if err := cmd.Run(); err != nil {
-		return
+		return err
 	}
 	video.Url = outputPath
 	video.Filename = "trimmed_" + video.Filename
@@ -68,4 +68,18 @@ func MergeVideos(ctx context.Context, videoIds []int) (id int, err error) {
 		return
 	}
 	return
+}
+
+func ShareVideoUrl(ctx context.Context, videoId int) (url string, err error) {
+	video, err := models.GetVideo(ctx, videoId)
+	if err != nil {
+		return
+	}
+
+	token, err := GenerateJWTForVideosSharing(video.Url)
+	if err != nil {
+		return
+	}
+
+	return "http://localhost:8080/video" + "?token=" + token, nil
 }
