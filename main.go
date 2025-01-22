@@ -9,11 +9,19 @@ import (
 	"os/signal"
 	"syscall"
 	"time"
+	"video-api/db"
+	"video-api/models"
 
 	"github.com/gorilla/mux"
 )
 
 func main() {
+	db.Init()
+	err := migration()
+	if err != nil {
+		fmt.Println("Migration failed", err)
+		return
+	}
 	router := mux.NewRouter()
 	router.Use(authMiddleware)
 
@@ -46,4 +54,9 @@ func main() {
 	}
 
 	fmt.Println("Server exiting")
+}
+
+func migration() error {
+	err := db.Migrate(&models.Video{})
+	return err
 }
