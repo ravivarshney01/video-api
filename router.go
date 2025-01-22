@@ -13,6 +13,7 @@ func addRoutes(r *mux.Router) {
 	h := handler.Handler{}
 	r.HandleFunc("/upload", h.UploadVideo).Methods(http.MethodPost)
 	r.HandleFunc("/trim", h.TrimVideo).Methods(http.MethodPost)
+	r.HandleFunc("/merge", h.MergeVideos).Methods(http.MethodPost)
 
 }
 

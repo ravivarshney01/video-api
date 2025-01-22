@@ -3,6 +3,7 @@ package request
 import (
 	"net/http"
 	"strconv"
+	"strings"
 )
 
 func ParseIntQueryParam(r *http.Request, param string, defaultValue int) int {
@@ -12,4 +13,18 @@ func ParseIntQueryParam(r *http.Request, param string, defaultValue int) int {
 		return defaultValue
 	}
 	return value
+}
+
+func ParseCommaSeparatedQueryParamIds(r *http.Request, param string) []int {
+	idsStr := r.FormValue(param)
+	ids := strings.Split(idsStr, ",")
+	var result []int
+	for _, id := range ids {
+		parsedId, err := strconv.Atoi(id)
+		if err != nil {
+			continue
+		}
+		result = append(result, parsedId)
+	}
+	return result
 }

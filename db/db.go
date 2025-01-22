@@ -31,3 +31,7 @@ func First(ctx context.Context, data interface{}, args ...interface{}) error {
 func Save(ctx context.Context, data interface{}) error {
 	return db.WithContext(ctx).Save(data).Error
 }
+
+func FindByIds(ctx context.Context, model interface{}, ids []int) error {
+	return db.WithContext(ctx).Find(model, ids).Error
+}
